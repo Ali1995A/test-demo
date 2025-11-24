@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网站功能测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-result { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .loading { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+    </style>
+</head>
+<body>
+    <h1>《御定全唐詩》网站功能测试</h1>
+    
+    <div id="testResults">
+        <div class="test-result loading">正在测试数据加载...</div>
+    </div>
+
+    <script>
+        // 测试数据加载
+        async function testDataLoading() {
+            const results = document.getElementById('testResults');
+            
+            try {
+                // 测试诗歌数据
+                const poemsResponse = await fetch('data/poems_data.json');
+                if (!poemsResponse.ok) throw new Error('诗歌数据加载失败');
+                const poemsData = await poemsResponse.json();
+                
+                results.innerHTML += `<div class="test-result success">✓ 诗歌数据加载成功: ${poemsData.length} 首诗歌</div>`;
+                
+                // 测试索引数据
+                const indexesResponse = await fetch('data/indexes.json');
+                if (!indexesResponse.ok) throw new Error('索引数据加载失败');
+                const indexesData = await indexesResponse.json();
+                
+                results.innerHTML += `<div class="test-result success">✓ 索引数据加载成功: ${Object.keys(indexesData.authors || {}).length} 位作者</div>`;
+                
+                // 测试搜索功能
+                const searchResponse = await fetch('data/search_data.json');
+                if (!searchResponse.ok) throw new Error('搜索数据加载失败');
+                const searchData = await searchResponse.json();
+                
+                results.innerHTML += `<div class="test-result success">✓ 搜索数据加载成功: ${searchData.length} 条搜索记录</div>`;
+                
+                // 测试统计信息
+                const statsResponse = await fetch('data/statistics.json');
+                if (!statsResponse.ok) throw new Error('统计信息加载失败');
+                const statsData = await statsResponse.json();
+                
+                results.innerHTML += `<div class="test-result success">✓ 统计信息加载成功: 总诗歌数 ${statsData.total_poems}</div>`;
+                
+                // 测试主应用脚本
+                const appResponse = await fetch('app.js');
+                if (!appResponse.ok) throw new Error('应用脚本加载失败');
+                
+                results.innerHTML += `<div class="test-result success">✓ 应用脚本加载成功</div>`;
+                
+                results.innerHTML += `<div class="test-result success">🎉 所有测试通过！网站功能正常</div>`;
+                
+            } catch (error) {
+                results.innerHTML += `<div class="test-result error">✗ 测试失败: ${error.message}</div>`;
+            }
+        }
+        
+        // 运行测试
+        testDataLoading();
+    </script>
+</body>
+</html>

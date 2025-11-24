@@ -1,0 +1,13 @@
+# AI诗歌标签分析器依赖包
+requests>=2.31.0
+python-dotenv>=1.0.0
+jieba>=0.42.1
+
+# 可选：用于现有诗歌分析器的依赖
+# 如果使用现有的poem_analyzer.py，需要以下包
+# jieba>=0.42.1
+
+# 开发依赖（可选）
+# pytest>=7.0.0
+# black>=23.0.0
+# flake8>=6.0.0

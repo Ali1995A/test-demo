@@ -1,0 +1,17 @@
+# 暂时不推送的文件列表
+# 生成时间: d:\Soft\MyCode\test-demo\御定全唐詩
+# 原因包括：大文件、生成文件、环境配置等
+
+__pycache__\ai_tag_retriever.cpython-312.pyc # 匹配排除模式: build_files
+__pycache__\batch_ai_poem_processor.cpython-312.pyc # 匹配排除模式: build_files
+__pycache__\deepseek_poem_analyzer.cpython-312.pyc # 匹配排除模式: build_files
+__pycache__\deepseek_poem_analyzer_demo.cpython-312.pyc # 匹配排除模式: build_files
+__pycache__\poem_analyzer.cpython-312.pyc # 匹配排除模式: build_files
+ai_poem_processing.log # 匹配排除模式: large_files
+folder_ai_poem_processing.log # 匹配排除模式: large_files
+website\data\indexes.json # 大文件 (8.2MB)
+website\data\poems_data.json # 大文件 (21.9MB)
+website\data\search_data.json # 大文件 (17.2MB)
+website_data\indexes.json # 大文件 (8.2MB)
+website_data\poems_data.json # 大文件 (21.9MB)
+website_data\search_data.json # 大文件 (17.2MB)

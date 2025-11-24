@@ -1,0 +1,54 @@
+# 应该推送的文件列表
+# 生成时间: d:\Soft\MyCode\test-demo\御定全唐詩
+
+# Python脚本
+ai_tag_retriever.py
+auto_git.py
+batch_ai_poem_processor.py
+deepseek_poem_analyzer.py
+deepseek_poem_analyzer_demo.py
+folder_batch_poem_processor.py
+generate_report.py
+git_file_manager.py
+json_query_demo.py
+json_query_tool.py
+poem_analyzer.py
+poem_analyzer_demo.py
+poem_analyzer_windows_demo.py
+progress_manager.py
+simple_poem_analyzer.py
+start_here.py
+start_here_windows.py
+website_data_preprocessor.py
+
+# 文档文件
+Git文件管理指南.md
+README.md
+README_git_solution.md
+ai_poem_analyzer_guide.md
+folder_processing_guide.md
+json_query_guide.md
+pause_resume_guide.md
+poem_analyzer_guide.md
+processing_guide.md
+quick_start_guide.md
+website_deployment_guide.md
+website_structure.md
+
+# 网站文件
+website\app.js
+website\index.html
+website\test_website.html
+
+# 配置文件
+author_statistics_report.txt
+exclude_list.txt
+push_list.txt
+requirements.txt
+tang_poetry_report.txt
+
+# 其他重要文件
+demo_solution.bat
+git_manager.bat
+一键解决.bat
+git_manager.bat

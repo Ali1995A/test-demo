@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《御定全唐詩》在线检索系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .poem-card {
+            transition: transform 0.2s;
+            margin-bottom: 1.5rem;
+            border: 1px solid #dee2e6;
+        }
+        .poem-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .poem-content {
+            font-family: 'SimSun', '宋体', serif;
+            line-height: 1.8;
+            font-size: 1.1em;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+            margin: 15px 0;
+            white-space: pre-line;
+        }
+        .keyword-tag {
+            display: inline-block;
+            background: #e9ecef;
+            padding: 0.25rem 0.5rem;
+            margin: 0.1rem;
+            border-radius: 0.25rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .keyword-tag:hover {
+            background: #dee2e6;
+        }
+        .author-link {
+            color: #0d6efd;
+            text-decoration: none;
+        }
+        .author-link:hover {
+            text-decoration: underline;
+        }
+        .search-highlight {
+            background-color: yellow;
+            padding: 0.1em 0.2em;
+            border-radius: 0.2em;
+        }
+        .stat-card {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+        .poem-title {
+            color: #2c3e50;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .poem-title-link {
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .poem-title-link:hover {
+            color: #007bff;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-book"></i> 御定全唐詩
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="#search">搜索</a>
+                <a class="nav-link" href="#browse">浏览</a>
+                <a class="nav-link" href="#statistics">统计</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="container mt-4">
+        <!-- 搜索区域 -->
+        <section id="search" class="mb-5">
+            <div class="row">
+                <div class="col-12">
+                    <h2><i class="fas fa-search"></i> 诗歌搜索</h2>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="input-group mb-3">
+                                <input type="text" id="searchInput" class="form-control" placeholder="输入关键词搜索诗歌标题、作者或内容...">
+                                <button class="btn btn-primary" onclick="searchPoems()">
+                                    <i class="fas fa-search"></i> 搜索
+                                </button>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <select id="authorFilter" class="form-select" onchange="filterByAuthor()">
+                                        <option value="">选择作者</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <select id="dynastyFilter" class="form-select" onchange="filterByDynasty()">
+                                        <option value="">选择朝代</option>
+                                        <option value="初唐">初唐</option>
+                                        <option value="盛唐">盛唐</option>
+                                        <option value="中唐">中唐</option>
+                                        <option value="晚唐">晚唐</option>
+                                        <option value="唐代">唐代</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <select id="keywordFilter" class="form-select" onchange="filterByKeyword()">
+                                        <option value="">选择主题</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 浏览区域 -->
+        <section id="browse" class="mb-5">
+            <h2><i class="fas fa-list"></i> 分类浏览</h2>
+            <div class="row">
+                <!-- 作者分类 -->
+                <div class="col-md-3 mb-3">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="fas fa-user"></i> 按作者</h5>
+                        </div>
+                        <div class="card-body" id="authorList" style="max-height: 300px; overflow-y: auto;">
+                            <!-- 作者列表将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 朝代分类 -->
+                <div class="col-md-3 mb-3">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="fas fa-history"></i> 按朝代</h5>
+                        </div>
+                        <div class="card-body" id="dynastyList">
+                            <!-- 朝代列表将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 主题分类 -->
+                <div class="col-md-3 mb-3">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="fas fa-tags"></i> 按主题</h5>
+                        </div>
+                        <div class="card-body" id="keywordList">
+                            <!-- 关键词列表将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 卷数分类 -->
+                <div class="col-md-3 mb-3">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="fas fa-book"></i> 按卷数</h5>
+                        </div>
+                        <div class="card-body" id="volumeList" style="max-height: 300px; overflow-y: auto;">
+                            <!-- 卷数列表将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 统计信息 -->
+        <section id="statistics" class="mb-5">
+            <h2><i class="fas fa-chart-bar"></i> 数据统计</h2>
+            <div class="row" id="statisticsCards">
+                <!-- 统计卡片将通过JavaScript动态生成 -->
+            </div>
+        </section>
+
+        <!-- 搜索结果 -->
+        <section id="results" class="mb-5">
+            <h2><i class="fas fa-file-alt"></i> 搜索结果</h2>
+            <div id="resultsInfo" class="alert alert-info" style="display: none;">
+                找到 <span id="resultsCount">0</span> 首诗歌
+            </div>
+            <div id="poemsList" class="row">
+                <!-- 诗歌列表将通过JavaScript动态生成 -->
+            </div>
+            <div id="noResults" class="alert alert-warning" style="display: none;">
+                没有找到匹配的诗歌
+            </div>
+        </section>
+    </div>
+
+    <!-- 诗歌详情模态框 -->
+    <div class="modal fade" id="poemModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="poemModalTitle">诗歌详情</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="poemModalBody">
+                    <!-- 诗歌详情内容将通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="bg-light py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">《御定全唐詩》在线检索系统 &copy; 2025</p>
+            <p class="text-muted small">数据来源：御定全唐詩数据库，共收录43,103首诗歌</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js"></script>
+    
+    <!-- 网站数据 -->
+    <script src="data/poems_data.json"></script>
+    <script src="data/indexes.json"></script>
+    <script src="data/statistics.json"></script>
+    <script src="data/author_ranking.json"></script>
+    <script src="data/keyword_ranking.json"></script>
+    <script src="data/search_data.json"></script>
+    
+    <!-- 主应用脚本 -->
+    <script src="app.js"></script>
+</body>
+</html>

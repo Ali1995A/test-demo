@@ -1,0 +1,218 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+彻底清除Git提示脚本 - 消除VS Code中的57个推送提示
+"""
+
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+
+def clear_all_git_changes():
+    """彻底清除所有Git变更和提示"""
+    print("🔧 开始彻底清除Git提示...")
+    
+    # 1. 添加当前目录所有变更
+    result = subprocess.run(['git', 'add', '.'], capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"添加失败: {result.stderr}")
+        return False
+    
+    # 2. 提交所有变更
+    commit_msg = "更新《御定全唐詩》文件管理解决方案"
+    result = subprocess.run(['git', 'commit', '-m', commit_msg], capture_output=True, text=True)
+    if result.returncode != 0:
+        if "nothing to commit" in result.stderr:
+            print("✅ 没有需要提交的变更")
+            return True
+        else:
+            print(f"提交失败: {result.stderr}")
+            return False
+    
+    print("✅ 已提交所有变更")
+    return True
+
+
+def refresh_git_index():
+    """刷新Git索引，确保VS Code显示正确状态"""
+    print("🔄 刷新Git索引...")
+    
+    # 重置索引
+    subprocess.run(['git', 'reset'], capture_output=True)
+    
+    # 重新添加需要的文件
+    important_files = [
+        '.gitignore',
+        'push_list.txt',
+        'exclude_list.txt', 
+        'auto_git.py',
+        'git_file_manager.py',
+        'git_manager.bat',
+        '一键解决.bat'
+    ]
+    
+    for file in important_files:
+        if Path(file).exists():
+            subprocess.run(['git', 'add', file], capture_output=True)
+    
+    print("✅ Git索引已刷新")
+
+
+def commit_essential_files():
+    """提交必要的文件并清理状态"""
+    print("📦 提交核心文件...")
+    
+    # 创建或更新.gitignore
+    gitignore_content = """# 《御定全唐詩》项目文件
+# 自动生成和管理
+
+# 环境配置
+.env
+.env.local
+
+# 处理数据
+website_data/*.json
+json/*.json
+ai_enhanced_*.json
+
+# 日志文件
+*.log
+folder_ai_poem_processing.log
+
+# 备份目录
+backup/
+
+# Python编译
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE
+.vscode/
+.idea/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 测试文件
+*.test.json
+test_*.py
+"""
+    
+    with open('.gitignore', 'w', encoding='utf-8') as f:
+        f.write(gitignore_content)
+    
+    # 添加并提交
+    subprocess.run(['git', 'add', '.gitignore'])
+    
+    # 创建提交
+    result = subprocess.run(['git', 'commit', '-m', '添加.gitignore和文件管理工具'], 
+                          capture_output=True, text=True)
+    
+    return result.returncode == 0
+
+
+def clean_untracked_files():
+    """清理未跟踪的文件"""
+    print("🧹 清理未跟踪文件...")
+    
+    # 查看未跟踪的文件
+    result = subprocess.run(['git', 'status', '--porcelain'], capture_output=True, text=True)
+    untracked = [line[3:] for line in result.stdout.split('\n') if line.startswith('??')]
+    
+    print(f"发现 {len(untracked)} 个未跟踪文件:")
+    for file in untracked:
+        print(f"  - {file}")
+    
+    # 询问是否清理
+    if untracked:
+        response = input(f"是否清理这些未跟踪文件? (y/N): ").lower()
+        if response == 'y':
+            for file in untracked:
+                if Path(file).exists():
+                    try:
+                        Path(file).unlink()
+                        print(f"已删除: {file}")
+                    except Exception as e:
+                        print(f"删除失败 {file}: {e}")
+
+
+def verify_clean_state():
+    """验证Git状态是否干净"""
+    print("✅ 验证Git状态...")
+    
+    result = subprocess.run(['git', 'status', '--porcelain'], capture_output=True, text=True)
+    
+    if not result.stdout.strip():
+        print("🎉 Git状态完全干净！没有未提交的变更。")
+        return True
+    else:
+        print(f"⚠️  仍有未处理的变更:")
+        print(result.stdout)
+        return False
+
+
+def force_refresh_vscode():
+    """强制刷新VS Code状态（通过操作Git）"""
+    print("🔄 强制刷新Git状态以更新VS Code...")
+    
+    # 执行一系列操作来触发VS Code刷新
+    subprocess.run(['git', 'add', '-u'], capture_output=True)
+    subprocess.run(['git', 'status'], capture_output=True)
+    
+    print("✅ VS Code应该会显示最新的Git状态")
+
+
+def main():
+    """主函数"""
+    print("=" * 60)
+    print("《御定全唐詩》Git提示清除工具")
+    print("彻底解决VS Code中的57个推送提示")
+    print("=" * 60)
+    
+    # 检查是否在Git仓库中
+    if not Path('.git').exists():
+        print("❌ 当前目录不是Git仓库")
+        return 1
+    
+    try:
+        # 步骤1: 清理未跟踪文件
+        clean_untracked_files()
+        
+        # 步骤2: 提交所有变更
+        if clear_all_git_changes():
+            print("✅ 已处理所有变更")
+        
+        # 步骤3: 刷新索引
+        refresh_git_index()
+        
+        # 步骤4: 提交核心文件
+        if commit_essential_files():
+            print("✅ 已提交核心文件")
+        
+        # 步骤5: 验证状态
+        if verify_clean_state():
+            print("\n🎉 成功！所有Git提示已清除")
+            print("VS Code中的推送提示应该立即消失")
+        else:
+            print("\n⚠️  仍有残留变更，请手动处理")
+        
+        # 步骤6: 强制刷新
+        force_refresh_vscode()
+        
+    except Exception as e:
+        print(f"❌ 处理过程中出现错误: {e}")
+        return 1
+    
+    print("=" * 60)
+    print("🎯 Git提示清除操作完成")
+    print("=" * 60)
+    
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
